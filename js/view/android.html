@@ -1,0 +1,24 @@
+<div class="container marketing">
+ 
+    <div class="feature-divider">
+        <div class="row feature">
+            <div class="col-md-7" ng-repeat='x in datas' >
+				<a ng-href='#/fuli/{{x._id}}'>
+				<p class="lead">{{x.createdAt}}</p>
+				<p class="lead">{{x.who}}</p>
+                <h2 class="featurette-heading">{{x.desc}}
+                   
+                </h2>
+				</a>
+				<hr class="featurette-divider">
+               
+            </div>
+			
+        
+        </div>
+     
+
+    </div>
+	
+
+</div>

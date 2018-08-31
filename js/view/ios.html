@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <script src="http://cdn.static.runoob.com/libs/angular.js/1.4.6/angular.min.js"></script>
+    <script>
+        var app = angular.module('test', []);
+        app.controller('parent', ['$http', '$scope', function ($http, $scope) {
+            //             $http.get('assets/fuli.json').
+            //             success(function (data) {
+            // 
+            //                 console.log('------' + data.error);
+            // 
+            // 
+            //                 console.log('ooooo===' + data);
+            //                 // $rootScope.name = param;
+            //             });
+
+
+            $scope.choosedItem = [];
+            $scope.datas = [
+				{
+                    'id': 1,
+                    'name': '这是第一个'
+                },
+                {
+                    'id': 2,
+                    'name': '这是第二个'
+                },
+                {
+                    'id': 3,
+                    'name': '这是第三个'
+                },
+                {
+                    'id': 4,
+                    'name': '这是第四个'
+                }
+            ];
+
+            $scope.chooseItem = function ($event, id) {
+                if (!$event.target.checked) {
+                    $scope.choosedItem.splice($scope.choosedItem.indexOf(id), 1);
+                } else {
+					if($scope.choosedItem.indexOf(id) == -1){
+						$scope.choosedItem.push(id);
+
+					}     
+                }
+                console.log('----' + id);
+            };
+
+            $scope.isChecked = function ( id) {
+				console.log('---sss-' + id);
+
+                return $scope.choosedItem.indexOf(id) != -1;
+            };
+
+            $scope.chooseAll = function () {
+                $scope.choosedItem = [];
+                for ( i = 0; i < $scope.datas.length; i++) {
+                    $scope.choosedItem.push($scope.datas[i].id);
+                }
+
+            };
+			
+
+            $scope.reChoose = function () {
+                for ( i = 0; i < $scope.datas.length; i++) {
+                    if ($scope.choosedItem.indexOf($scope.datas[i].id) != -1) {
+                        $scope.choosedItem.splice($scope.choosedItem.indexOf($scope.datas[i].id), 1);
+                    } else {
+                        $scope.choosedItem.push($scope.datas[i].id);
+                    }
+
+                }
+
+            };
+
+
+            $scope.send = function () {
+                $scope.$broadcast("parent", 'Data to Send');
+            };
+
+
+
+        }]);
+
+        app.controller('child1', ['$scope', function ($scope) {
+            $scope.$on('parent', function (event, args) {
+                console.log('....receive--' + args);
+
+            })
+        }]);
+
+        app.factory('MyInterceptor', function ($q) {
+            return {
+                // 可选，拦截成功的请求
+                request: function (config) {
+                    // 进行预处理
+                    // ...
+                    console.log('---request');
+                    return config || $q.when(config);
+                },
+                // 可选，拦截失败的请求
+                requestError: function (rejection) {
+                    // 对失败的请求进行处理
+                    // ...
+                    console.log('---requestError');
+                    if (canRecover(rejection)) {
+                        return responseOrNewPromise
+                    }
+                    return $q.reject(rejection);
+                },
+                // 可选，拦截成功的响应
+                response: function (response) {
+                    // 进行预处理
+                    // ....
+                    console.log('---response');
+                    return response || $q.when(reponse);
+                },
+                // 可选，拦截失败的响应
+                responseError: function (rejection) {
+                    // 对失败的响应进行处理
+                    // ...
+                    console.log('---responseError');
+                    if (canRecover(rejection)) {
+                        return responseOrNewPromise
+                    }
+                    return $q.reject(rejection);
+                }
+            };
+        });
+        app.config(function ($httpProvider) {
+            $httpProvider.interceptors.push('MyInterceptor');
+        });
+    </script>
+
+</head>
+
+<body>
+
+    <div ng-app="test" ng-controller='parent'>
+        <button type="button" ng-click='send()'>发送</button>
+
+        <div ng-controller='child1'>
+            <p>child receive {{data1}}</p>
+        </div>
+		
+
+        <dd ng-repeat='x in datas'>
+            <input type="checkbox" ng-checked='isChecked(x.id)' ng-click='chooseItem($event,x.id)' >{{x.name}}
+
+        </dd>
+
+        <dt>已选 {{choosedItem}}</dt>
+        <input type="button" ng-click='chooseAll()' value="全选">
+        <input type="button" ng-click='reChoose()' value="反选">
+
+
+     
+    </div>
+
+
+
+</body>
+
+</html>
